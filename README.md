@@ -7,7 +7,7 @@
 
 >Luego en el constructor **InitializeComponent();** debajo de el colocar **UseLock.ManageAttempt();** para iniciar el sistema de bloqueo de aplicacion. En el evento Load del Forms colocar esto:
 
-```[C#]
+```
 if (UseLock.Access_ == false)
             {
                 Application.Exit();
