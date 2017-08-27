@@ -5,15 +5,77 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 using System.Windows.Forms;
+using System.Net;
+using System.IO;
 
 namespace UseLockForms
 {
     public class UseLock
     {
         public static bool Access_ { get; set; }
+        public static bool Estado_Net;
+        public static string SerialNumber;
+        public static bool compruebaConexion()
+        {
 
+            WebRequest request = null;
+            WebResponse response = null;
+            Uri Url = new Uri("http://www.google.com.do");
+
+            try
+            {
+                //Creamos la request
+                request = System.Net.WebRequest.Create(Url);
+                //POnemos un tiempo limite
+                request.Timeout = 5000;
+                //ejecutamos la request
+                response = request.GetResponse();
+                response.Close();
+
+                request = null;
+
+                return true;
+
+
+            }
+            catch
+            {
+                //si ocurre un error, devolvemos error
+                request = null;
+
+                return false;
+
+            }
+        }
+        public static void GetSerial()
+        {
+            Estado_Net = compruebaConexion();
+            if (Estado_Net == true)
+            {
+                try
+                {
+                    string url = "http://domipass.000webhostapp.com/BloqueoDeUso/General.txt";
+                    WebRequest req = WebRequest.Create(url);
+                    WebResponse resp = req.GetResponse();
+                    Stream str = resp.GetResponseStream();
+                    StreamReader leer = new StreamReader(str);
+                    SerialNumber = leer.ReadLine();
+                }
+                catch
+                {
+                    SerialNumber = "3556215";
+                }
+                
+            }
+            else
+            {
+                SerialNumber = "3556215";
+            }
+        }
         public static void ManageAttempt()
         {
+            GetSerial();
+
             RegistryKey rk1 = Registry.CurrentUser;
             RegistryKey rk2 = Registry.CurrentUser;
             string valor1;
@@ -59,7 +121,7 @@ namespace UseLockForms
                             while (InputBox.ResultValue.Length > 0 || String.IsNullOrEmpty(InputBox.ResultValue))
                             {
 
-                                if (InputBox.ResultValue == "2509337")
+                                if (InputBox.ResultValue == SerialNumber)
                                 {
 
                                     Access_ = true;
